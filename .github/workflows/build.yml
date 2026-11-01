@@ -13,72 +13,22 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: Create Android Project
         run: |
           mkdir -p app/src/main/java/com/dreamvideo/ai
           mkdir -p gradle/wrapper
           echo "include ':app'" > settings.gradle
-          cat > build.gradle <<'GRADLE'
-          buildscript {
-              repositories { google(); mavenCentral() }
-              dependencies { classpath 'com.android.tools.build:gradle:8.2.0' }
-          }
-          allprojects { repositories { google(); mavenCentral() } }
-          GRADLE
-          cat > gradle/wrapper/gradle-wrapper.properties <<'PROP'
-          distributionBase=GRADLE_USER_HOME
+          echo "distributionBase=GRADLE_USER_HOME
           distributionPath=wrapper/dists
           distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
           zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          PROP
-          cat > app/build.gradle <<'APPGRADLE'
-          plugins { id 'com.android.application' }
-          android {
-              namespace 'com.dreamvideo.ai'
-              compileSdk 34
-              defaultConfig {
-                  applicationId "com.dreamvideo.ai"
-                  minSdk 21
-                  targetSdk 34
-                  versionCode 1
-                  versionName "1.0"
-              }
-          }
-          dependencies {
-              implementation 'androidx.appcompat:appcompat:1.6.1'
-          }
-          APPGRADLE
-          cat > app/src/main/AndroidManifest.xml <<'MANIFEST'
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application android:label="DreamVideo AI">
-                  <activity android:name=".MainActivity" android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          MANIFEST
-          cat > app/src/main/java/com/dreamvideo/ai/MainActivity.java <<'JAVA'
-          package com.dreamvideo.ai;
-          import android.os.Bundle;
-          import android.widget.TextView;
-          import androidx.appcompat.app.AppCompatActivity;
-          public class MainActivity extends AppCompatActivity {
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-                  TextView tv = new TextView(this);
-                  tv.setText("DreamVideo AI - APK Build Success!");
-                  tv.setTextSize(24);
-                  tv.setPadding(50,100,50,50);
-                  setContentView(tv);
-              }
-          }
-          JAVA
+          zipStorePath=wrapper/dists" > gradle/wrapper/gradle-wrapper.properties
+          echo "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.2.0' } } allprojects { repositories { google(); mavenCentral() } }" > build.gradle
+          echo "plugins { id 'com.android.application' } android { namespace 'com.dreamvideo.ai'; compileSdk 34; defaultConfig { applicationId \"com.dreamvideo.ai\"; minSdk 21; targetSdk 34; versionCode 1; versionName \"1.0\" } } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }" > app/build.gradle
+          echo '<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="DreamVideo AI"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>' > app/src/main/AndroidManifest.xml
+          echo 'package com.dreamvideo.ai; import android.os.Bundle; import android.widget.TextView; import androidx.appcompat.app.AppCompatActivity; public class MainActivity extends AppCompatActivity { @Override protected void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); TextView tv = new TextView(this); tv.setText("DreamVideo AI - APK Ready!"); tv.setTextSize(24); tv.setPadding(50,100,50,50); setContentView(tv); } }' > app/src/main/java/com/dreamvideo/ai/MainActivity.java
       - name: Build Debug APK
         run: |
           gradle wrapper --gradle-version 8.2
@@ -88,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DreamVideo-AI-APK
-          path: app/build/outputs/apk/debug/app-debug.apk 
+          path: app/build/outputs/apk/debug/app-debug.apk
